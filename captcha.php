@@ -25,18 +25,18 @@
 */
 require_once "recaptchalib.php";
 // Register API keys at https://www.google.com/recaptcha/admin
-$siteKey = yourls_get_option( 'abdulrauf_adminreCaptcha_pub_key' );
-$secret = yourls_get_option( 'abdulrauf_adminreCaptcha_priv_key' );
+$siteKey = yourls_get_option( 'abdulrauf_adminhCaptcha_pub_key' );
+$secret = yourls_get_option( 'abdulrauf_adminhCaptcha_priv_key' );
 // reCAPTCHA supported 40+ languages listed here: https://developers.google.com/recaptcha/docs/language
 $lang = "en";
 // The response from reCAPTCHA
 $resp = null;
 // The error code from reCAPTCHA, if any
 $error = null;
-$reCaptcha = new ReCaptcha($secret);
+$hCaptcha = new ReCaptcha($secret);
 // Was there a reCAPTCHA response?
 if ($_POST["g-recaptcha-response"]) {
-$resp = $reCaptcha->verifyResponse(
+$resp = $hCaptcha->verifyResponse(
 $_SERVER["REMOTE_ADDR"],
 $_POST["g-recaptcha-response"]
 );
