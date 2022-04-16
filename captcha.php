@@ -1,9 +1,9 @@
 <?php
 /**
-* Sample PHP code to use hCaptcha V2.
+* Sample PHP code to use reCAPTCHA V2.
 *
 * @copyright Copyright (c) 2014, Google Inc.
-* @link http://www.google.com/hCaptcha
+* @link http://www.google.com/recaptcha
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,21 @@
 * THE SOFTWARE.
 */
 require_once "recaptchalib.php";
-// Register API keys at https://www.google.com/hCaptcha/admin
-$siteKey = yourls_get_option( 'abdulrauf_adminhCaptcha_pub_key' );
-$secret = yourls_get_option( 'abdulrauf_adminhCaptcha_priv_key' );
-// hCaptcha supported 40+ languages listed here: https://developers.google.com/hCaptcha/docs/language
+// Register API keys at https://www.google.com/recaptcha/admin
+$siteKey = yourls_get_option( 'abdulrauf_adminreCaptcha_pub_key' );
+$secret = yourls_get_option( 'abdulrauf_adminreCaptcha_priv_key' );
+// reCAPTCHA supported 40+ languages listed here: https://developers.google.com/recaptcha/docs/language
 $lang = "en";
-// The response from hCaptcha
+// The response from reCAPTCHA
 $resp = null;
-// The error code from hCaptcha, if any
+// The error code from reCAPTCHA, if any
 $error = null;
-$hCaptcha = new hCaptcha($secret);
-// Was there a hCaptcha response?
-if ($_POST["g-hCaptcha-response"]) {
-$resp = $hCaptcha->verifyResponse(
+$reCaptcha = new ReCaptcha($secret);
+// Was there a reCAPTCHA response?
+if ($_POST["g-recaptcha-response"]) {
+$resp = $reCaptcha->verifyResponse(
 $_SERVER["REMOTE_ADDR"],
-$_POST["g-hCaptcha-response"]
+$_POST["g-recaptcha-response"]
 );
 }
 ?>

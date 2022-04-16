@@ -1,15 +1,15 @@
 <?php
 /**
-* This is a PHP library that handles calling hCaptcha.
+* This is a PHP library that handles calling reCAPTCHA.
 * - Documentation and latest version
-* https://developers.google.com/hCaptcha/docs/php
-* - Get a hCaptcha API Key
-* https://www.google.com/hCaptcha/admin/create
+* https://developers.google.com/recaptcha/docs/php
+* - Get a reCAPTCHA API Key
+* https://www.google.com/recaptcha/admin/create
 * - Discussion group
-* http://groups.google.com/group/hCaptcha
+* http://groups.google.com/group/recaptcha
 *
 * @copyright Copyright (c) 2014, Google Inc.
-* @link http://www.google.com/hCaptcha
+* @link http://www.google.com/recaptcha
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,14 @@
 * THE SOFTWARE.
 */
 /**
-* A hCaptchaResponse is returned from checkAnswer().
+* A ReCaptchaResponse is returned from checkAnswer().
 */
-class hCaptchaResponse
+class ReCaptchaResponse
 {
 public $success;
 public $errorCodes;
 }
-class hCaptcha
+class ReCaptcha
 {
 private static $_signupUrl = "https://dashboard.hcaptcha.com";
 private static $_siteVerifyUrl =
@@ -47,12 +47,12 @@ private static $_version = "php_1.0";
 /**
 * Constructor.
 *
-* @param string $secret shared secret between site and hCaptcha server.
+* @param string $secret shared secret between site and ReCAPTCHA server.
 */
-function hCaptcha($secret)
+function ReCaptcha($secret)
 {
 if ($secret == null || $secret == "") {
-die("To use hCaptcha you must get an API key from <a href='"
+die("To use reCAPTCHA you must get an API key from <a href='"
 . self::$_signupUrl . "'>" . self::$_signupUrl . "</a>");
 }
 $this->_secret=$secret;
@@ -75,9 +75,9 @@ $req=substr($req, 0, strlen($req)-1);
 return $req;
 }
 /**
-* Submits an HTTP GET to a hCaptcha server.
+* Submits an HTTP GET to a reCAPTCHA server.
 *
-* @param string $path url path to hCaptcha server.
+* @param string $path url path to recaptcha server.
 * @param array $data array of parameters to be sent.
 *
 * @return array response
@@ -89,22 +89,22 @@ $response = file_get_contents($path . $req);
 return $response;
 }
 /**
-* Calls the hCaptcha siteverify API to verify whether the user passes
+* Calls the reCAPTCHA siteverify API to verify whether the user passes
 * CAPTCHA test.
 *
 * @param string $remoteIp IP address of end user.
-* @param string $response response string from hCaptcha verification.
+* @param string $response response string from recaptcha verification.
 *
-* @return hCaptchaResponse
+* @return ReCaptchaResponse
 */
 public function verifyResponse($remoteIp, $response)
 {
 // Discard empty solution submissions
 if ($response == null || strlen($response) == 0) {
-$hCaptchaResponse = new hCaptchaResponse();
-$hCaptchaResponse->success = false;
-$hCaptchaResponse->errorCodes = 'missing-input';
-return $hCaptchaResponse;
+$recaptchaResponse = new ReCaptchaResponse();
+$recaptchaResponse->success = false;
+$recaptchaResponse->errorCodes = 'missing-input';
+return $recaptchaResponse;
 }
 $getResponse = $this->_submitHttpGet(
 self::$_siteVerifyUrl,
@@ -116,14 +116,14 @@ array (
 )
 );
 $answers = json_decode($getResponse, true);
-$hCaptchaResponse = new hCaptchaResponse();
+$recaptchaResponse = new ReCaptchaResponse();
 if (trim($answers ['success']) == true) {
-$hCaptchaResponse->success = true;
+$recaptchaResponse->success = true;
 } else {
-$hCaptchaResponse->success = false;
-$hCaptchaResponse->errorCodes = $answers [error-codes];
+$recaptchaResponse->success = false;
+$recaptchaResponse->errorCodes = $answers [error-codes];
 }
-return $hCaptchaResponse;
+return $recaptchaResponse;
 }
 }
 ?>
