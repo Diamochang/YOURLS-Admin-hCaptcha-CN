@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Admin hCaptcha
-Plugin URI: https://github.com/ChrisChrome/Admin-hCaptcha.git
-Description: This plugin enable hCaptcha on Admin login screen
+Plugin Name: YOURLS Admin hCaptcha CN
+Plugin URI: https://github.com/Diamochang/YOURLS-Admin-hCaptcha-CN
+Description: 通过在管理面板登录页面添加 hCaptcha 验证来保护你的 YOURLS 短链接服务。
 Version: 1.3
-Author: Original by Abdul Rauf, rework by Chris Chrome
-Author URI: https://github.com/ChrisChrome
+Author: Abdul Rauf, rework by Mike Wang (Diamochang)
+Author URI: http://imdchs.rf.gd
 */
 
 if( !defined( 'YOURLS_ABSPATH' ) ) die();
@@ -15,25 +15,50 @@ yourls_add_action( 'pre_login_username_password', 'abdulrauf_adminhCaptcha_valid
 // Validates hCaptcha
 function abdulrauf_adminhCaptcha_validatehCaptcha()
 {
-	include('captcha.php'); 
-	if ($resp != null && $resp->success) 
-	{ 
-		//hCaptcha validated
-		return true;
-	}
-	else
-	{
-		yourls_do_action( 'login_failed' );
-		yourls_login_screen( $error_msg = 'hCaptcha validation failed' );
-		die();
-		return false;
-	}
+	// 既然要用 hCaptcha，为什么要用 Google 的代码？奇怪。
+	// include('captcha.php'); 
+	// if ($resp != null && $resp->success) 
+	// { 
+	//	//hCaptcha validated
+	//	return true;
+	// }
+	// else
+	// {
+	//	yourls_do_action( 'login_failed' );
+	//	yourls_login_screen( $error_msg = 'hCaptcha validation failed' );
+	//	die();
+	//	return false;
+	// }
+
+	// 使用 https://medium.com/@hCaptcha/using-hcaptcha-with-php-fc31884aa9ea 中的验证方法
+	// 此方法有待测试验证。
+	$vdata = array(
+	    'secret' => $privkey,
+            'response' => $_POST['h-captcha-response']
+        );
+        $verify = curl_init();
+        curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
+        curl_setopt($verify, CURLOPT_POST, true);
+        curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($vdata));
+        curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($verify);
+        // var_dump($response);
+        $responseData = json_decode($response);
+        if($responseData->success) {
+             return true;
+        } 
+        else {
+             yourls_do_action( 'login_failed' );
+	     yourls_login_screen( $error_msg = 'hCaptcha 验证失败。如果 hCaptcha 被你所在地区的 GFW 非完全屏蔽，请尝试使用代理或者使用加速镜像。残障人士也可访问 https://www.hcaptcha.com/accessibility 了解如何设置可以直接绕过的 Cookie。' );
+	     die();
+	     return false;
+        }
 }
 
 // Register plugin on admin page
 yourls_add_action( 'plugins_loaded', 'abdulrauf_adminhCaptcha_init' );
 function abdulrauf_adminhCaptcha_init() {
-    yourls_register_plugin_page( 'adminhCaptcha', 'Admin hCaptcha Settings', 'adminhCaptcha_config_page' );
+    yourls_register_plugin_page( 'adminhCaptcha', 'Admin hCaptcha 设置', 'adminhCaptcha_config_page' );
 }
 
 // The function that will draw the config page
@@ -46,12 +71,12 @@ function adminhCaptcha_config_page() {
     $nonce = yourls_create_nonce( 'abdulrauf_adminhCaptcha_nonce' );
     $pubkey = yourls_get_option( 'abdulrauf_adminhCaptcha_pub_key', "" );
     $privkey = yourls_get_option( 'abdulrauf_adminhCaptcha_priv_key', "" );
-    echo '<h2>Admin hCaptcha plugin settings</h2>';
+    echo '<h2>Admin hCaptcha 插件设置</h2>';
     echo '<form method="post">';
     echo '<input type="hidden" name="nonce" value="' . $nonce . '" />';
-    echo '<p><label for="abdulrauf_adminhCaptcha_public_key">hCaptcha site key: </label>';
+    echo '<p><label for="abdulrauf_adminhCaptcha_public_key">你从 hCaptcha 仪表板获得的站点密钥（sitekey）：</label>';
     echo '<input type="text" id="abdulrauf_adminhCaptcha_public_key" name="abdulrauf_adminhCaptcha_public_key" value="' . $pubkey . '"></p>';  
-    echo '<p><label for="abdulrauf_adminhCaptcha_private_key">hCaptcha secret key: </label>';
+    echo '<p><label for="abdulrauf_adminhCaptcha_private_key">你从 hCaptcha 仪表板获得的私钥（secret）: </label>';
     echo '<input type="text" id="abdulrauf_adminhCaptcha_private_key" name="abdulrauf_adminhCaptcha_private_key" value="' . $privkey . '"></p>';
     echo '<input type="submit" value="Save"/>';
     echo '</form>';
@@ -75,7 +100,7 @@ function abdulrauf_adminhCaptcha_save_admin()
 	else {
         yourls_add_option( 'abdulrauf_adminhCaptcha_priv_key', $privkey );
     }
-    echo "Saved";
+    echo "设置已保存";
 }
 
 // Add the JavaScript for hCaptcha widget
@@ -96,6 +121,7 @@ function abdulrauf_adminhCaptcha_addjs() {
 		}
     });
 	// JavaScript function to explicitly render the reCAPTCHA widget
+	// 呵呀...明天再改改。（11/30）
 	var loadCaptcha = function() {
 	  captchaContainer = grecaptcha.render('captcha_container', {
 		'sitekey' : '<?php echo $siteKey?>'
