@@ -120,10 +120,10 @@ function abdulrauf_adminhCaptcha_addjs() {
 			document.getElementById('login').innerHTML = form.slice(0, index) + '<div id="captcha_container"></div>' + form.slice(index);	    
 		}
     });
-	// JavaScript function to explicitly render the reCAPTCHA widget
-	// 呵呀...明天再改改。（11/30）
+	// JavaScript function to explicitly render the hCaptcha widget
+	// 有待测试。
 	var loadCaptcha = function() {
-	  captchaContainer = grecaptcha.render('captcha_container', {
+	  captchaContainer = hcaptcha.render('captcha_container', {
 		'sitekey' : '<?php echo $siteKey?>'
 	  });
 	};
