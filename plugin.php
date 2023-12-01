@@ -31,9 +31,9 @@ function abdulrauf_adminhCaptcha_validatehCaptcha()
 	// }
 
 	// 使用 https://medium.com/@hCaptcha/using-hcaptcha-with-php-fc31884aa9ea 中的验证方法
-	// 此方法有待测试验证。
+	$privKey = yourls_get_option( 'abdulrauf_adminhCaptcha_priv_key' );
 	$vdata = array(
-	    'secret' => $privkey,
+	    'secret' => $privKey,
             'response' => $_POST['h-captcha-response']
         );
         $verify = curl_init();
@@ -71,16 +71,24 @@ function adminhCaptcha_config_page() {
     $nonce = yourls_create_nonce( 'abdulrauf_adminhCaptcha_nonce' );
     $pubkey = yourls_get_option( 'abdulrauf_adminhCaptcha_pub_key', "" );
     $privkey = yourls_get_option( 'abdulrauf_adminhCaptcha_priv_key', "" );
-    echo '<h2>Admin hCaptcha 插件设置</h2>';
-    echo '<form method="post">';
-    echo '<input type="hidden" name="nonce" value="' . $nonce . '" />';
-    echo '<p><label for="abdulrauf_adminhCaptcha_public_key">你从 hCaptcha 仪表板获得的站点密钥（sitekey）：</label>';
-    echo '<input type="text" id="abdulrauf_adminhCaptcha_public_key" name="abdulrauf_adminhCaptcha_public_key" value="' . $pubkey . '"></p>';  
-    echo '<p><label for="abdulrauf_adminhCaptcha_private_key">你从 hCaptcha 仪表板获得的私钥（secret）: </label>';
-    echo '<input type="text" id="abdulrauf_adminhCaptcha_private_key" name="abdulrauf_adminhCaptcha_private_key" value="' . $privkey . '"></p>';
-    echo '<input type="submit" value="Save"/>';
-    echo '</form>';
-
+    // 参考 Ozh 的写法，直接 echo 整个设置表单，提高效率
+    echo <<<HTML
+        <main>
+            <h2>Admin hCaptcha 插件设置</h2>
+            <form method="post">
+            <input type="hidden" name="nonce" value="$nonce" />
+            <p>
+                <label>你从 hCaptcha 仪表板获得的站点密钥（sitekey）：</label>
+	        <input type="text" id="abdulrauf_adminhCaptcha_public_key" name="abdulrauf_adminhCaptcha_public_key" value="$pubkey">
+            </p>
+	    <p>
+                <label>你从 hCaptcha 仪表板获得的私钥（secret）：</label>
+	        <input type="text" id="abdulrauf_adminhCaptcha_private_key" name="abdulrauf_adminhCaptcha_private_key" value="$privkey">
+            </p>
+            <p><input type="submit" value="保存设置" class="button" /></p>
+            </form>
+        </main>
+    HTML;
 }
 
 // Save hCaptcha keys in database 
@@ -114,19 +122,20 @@ function abdulrauf_adminhCaptcha_addjs() {
 		var logindiv = document.getElementById('login');
 		if (logindiv != null) { //check if we are on login screen
 			//getting hCaptcha script by jquery only on login screen
-			$.getScript( "https://js.hcaptcha.com/1/api.js?onload=loadCaptcha&render=explicit");
+			// 按照官方方法调用 API
+			$.getScript( "https://www.hcaptcha.com/1/api.js");
 			var form = logindiv.innerHTML;
 			var index = form.indexOf('<p style="text-align: right;">'); //finding tag before which hCaptcha widget should appear
-			document.getElementById('login').innerHTML = form.slice(0, index) + '<div id="captcha_container"></div>' + form.slice(index);	    
+			document.getElementById('login').innerHTML = form.slice(0, index) + '<div class="h-captcha" data-sitekey="<?php echo $siteKey?>"></div>' + form.slice(index);	    
 		}
     });
-	// JavaScript function to explicitly render the hCaptcha widget
-	// 有待测试。
-	var loadCaptcha = function() {
-	  captchaContainer = hcaptcha.render('captcha_container', {
-		'sitekey' : '<?php echo $siteKey?>'
-	  });
-	};
+	// JavaScript function to explicitly render the reCAPTCHA widget
+	// 经测试，此种 render 在 hCaptcha 上无效。
+	// var loadCaptcha = function() {
+	//   captchaContainer = hcaptcha.render('captcha_container', {
+	// 	'sitekey' : '<?php echo $siteKey?>'
+	//   });
+	// };
 	</script>
 	<?php
 }
