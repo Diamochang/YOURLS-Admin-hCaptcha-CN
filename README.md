@@ -1,7 +1,7 @@
-Admin reCaptcha
+Admin hCaptcha CN
 ====================
 
-Plugin for [YOURLS](http://yourls.org) `v1.7 (possibly earlier, not tested) adding reCaptcha to private admin page`. 
+这个插件适用于 [YOURLS](http://yourls.org) `>=v1.7`（理论上更早版本也可以使用，但未经过测试）。在`v1.9.2`上经测试可用。
 
 Description
 -----------
