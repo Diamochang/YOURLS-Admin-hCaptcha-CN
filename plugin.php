@@ -79,16 +79,16 @@ function adminhCaptcha_config_page() {
             <input type="hidden" name="nonce" value="$nonce" />
             <p>
                 <label>你从 hCaptcha 仪表板获得的站点密钥（sitekey）：</label>
-	        <input type="text" id="abdulrauf_adminhCaptcha_public_key" name="abdulrauf_adminhCaptcha_public_key" value="$pubkey">
+            <input type="text" id="abdulrauf_adminhCaptcha_public_key" name="abdulrauf_adminhCaptcha_public_key" value="$pubkey">
             </p>
-	    <p>
+            <p>
                 <label>你从 hCaptcha 仪表板获得的私钥（secret）：</label>
-	        <input type="text" id="abdulrauf_adminhCaptcha_private_key" name="abdulrauf_adminhCaptcha_private_key" value="$privkey">
+            <input type="text" id="abdulrauf_adminhCaptcha_private_key" name="abdulrauf_adminhCaptcha_private_key" value="$privkey">
             </p>
             <p><input type="submit" value="保存设置" class="button" /></p>
             </form>
         </main>
-    HTML;
+HTML;
 }
 
 // Save hCaptcha keys in database 
